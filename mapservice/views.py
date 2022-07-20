@@ -12,15 +12,23 @@ def index(request):
 def getMap(request):
     context = staticmaps.Context()
     context.set_tile_provider(staticmaps.tile_provider_OSM)
+    context.set_zoom(15)
 
-    frankfurt = staticmaps.create_latlng(50.110644, 8.682092)   
-    newyork = staticmaps.create_latlng(40.712728, -74.006015)
-
-    context.add_object(staticmaps.Line([frankfurt, newyork], color=staticmaps.BLUE, width=4))
-    context.add_object(staticmaps.Marker(frankfurt, color=staticmaps.GREEN, size=12))
-    context.add_object(staticmaps.Marker(newyork, color=staticmaps.RED, size=12))
-
-    # render non-anti-aliased png
+    # Creating Single Lat Long to Add on map
+    markerLocation = staticmaps.create_latlng(33.678421509327215, 73.0483424974427)   
+    polygonLocation = staticmaps.Area([staticmaps.create_latlng(33.68356396446586, 73.04902914294371),
+    staticmaps.create_latlng(33.688599670247875, 73.07246954084945),staticmaps.create_latlng(33.67781864409684, 73.07775428510458),
+    staticmaps.create_latlng(33.68356396446586, 73.04902914294371)],
+        fill_color=staticmaps.parse_color("#00FF003F"),
+        width=2,
+        color=staticmaps.BLUE)
+    
+    # Adding polygon and marker on map
+    context.add_object(polygonLocation)
+    context.add_object(staticmaps.Marker(markerLocation, color=staticmaps.GREEN, size=12))
+    
+    
+    # rendering the created image in django response as image
     image = context.render_pillow(800, 500)
     resposne = HttpResponse(content_type="image/png")
     image.save(resposne,'png')
